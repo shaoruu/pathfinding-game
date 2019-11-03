@@ -56,8 +56,19 @@ class Grid {
     this.data[r * DIMENSION + c] = value
   }
 
+  removeObstacle = (r, c) => {
+    const node = this.getNodeFromRC(r, c)
+    node.walkable = true
+  }
+
   reset = () => {
     this.nodes.forEach(na => na.forEach(n => n.reset()))
+  }
+
+  isWalkable = (r, c) => {
+    const node = this.getNodeFromRC(r, c)
+    if (node) return node.walkable
+    return false
   }
 
   _initMembers = () => {

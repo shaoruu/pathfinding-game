@@ -20,13 +20,13 @@ const wallGeo = new THREE.BoxBufferGeometry(DIMENSION, DIMENSION, DIMENSION)
 const wallMat = new THREE.MeshBasicMaterial({ color: WORLD_WALL_COLOR })
 const wallMesh = new THREE.Mesh(wallGeo, wallMat)
 
-const monsterGeo = new THREE.BoxBufferGeometry(DIMENSION, DIMENSION, DIMENSION)
+const monsterGeo = new THREE.BoxBufferGeometry(MONSTER_DIM, MONSTER_DIM, MONSTER_DIM)
 const monsterMat = new THREE.MeshBasicMaterial({ color: MONSTER_COLOR })
 const monsterMesh = new THREE.Mesh(monsterGeo, monsterMat)
 
-const targetGeo = new THREE.BoxBufferGeometry(DIMENSION, DIMENSION, DIMENSION)
-const targetMat = new THREE.MeshBasicMaterial({ color: TARGET_COLOR })
-const targetMesh = new THREE.Mesh(targetGeo, targetMat)
+const playerGeo = new THREE.BoxBufferGeometry(PLAYER_DIM, PLAYER_DIM, PLAYER_DIM)
+const playerMat = new THREE.MeshBasicMaterial({ color: TARGET_COLOR })
+const playerMesh = new THREE.Mesh(playerGeo, playerMat)
 
 const pathSegmentGeo = new THREE.BoxBufferGeometry(DIMENSION / 2, DIMENSION / 2, DIMENSION / 2)
 const pathSegmentMat = new THREE.MeshBasicMaterial({ color: PATH_COLOR })

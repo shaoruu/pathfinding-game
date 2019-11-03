@@ -10,7 +10,14 @@ let isDragging
 dragControls.addEventListener('dragstart', () => (isDragging = true))
 dragControls.addEventListener('dragend', () => (isDragging = false))
 dragControls.addEventListener('drag', ({ object }) => {
-  World.getInstance().objectDragged(object.name)
+  switch (object.name) {
+    case MONSTER_TAG:
+      Monster.getInstance().dragged()
+      break
+    case PLAYER_TAG:
+      Player.getInstance().dragged()
+      break
+  }
 })
 
 const raycaster = new THREE.Raycaster()

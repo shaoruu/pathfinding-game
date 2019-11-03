@@ -29,12 +29,13 @@ camera.position.set(700, 800, 0)
 const controls = new THREE.OrbitControls(camera, renderer.domElement)
 controls.enableDamping = true // an animation loop is required when either damping or auto-rotation are enabled
 controls.enablePan = false
-controls.dampingFactor = 0.05
+controls.rotateSpeed = 0.02
+controls.dampingFactor = 0.1
 controls.screenSpacePanning = false
 controls.minDistance = 100
 controls.maxDistance = 1200
-// controls.minAzimuthAngle = 0
-// controls.maxAzimuthAngle = 0
+controls.minAzimuthAngle = 0
+controls.maxAzimuthAngle = 0
 controls.maxPolarAngle = Math.PI / 2
 
 /* -------------------------------------------------------------------------- */

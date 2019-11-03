@@ -11,7 +11,18 @@ const DIVISIONS = 20 // blocks per side of map
 const DIMENSION = 40 // pixels per block
 
 const MONSTER_TAG = 'MONSTER-TAG'
-const TARGET_TAG = 'TARGET-TAG'
+const MONSTER_RECALC_DELAY = 300
+const MONSTER_SPEED = 10
+
+const PLAYER_TAG = 'PLAYER-TAG'
+const PLAYER_ACCELERATION = 0.2
+const PLAYER_INERTIA = 0.05
+const PLAYER_LERP_FACTOR = 0.9
+
+const PLAYER_DIM = 35
+const MONSTER_DIM = 30
+
+const OBSTACLE_LIFESPAN = 1000
 
 /* -------------------------------------------------------------------------- */
 /*                                   COLORS                                   */

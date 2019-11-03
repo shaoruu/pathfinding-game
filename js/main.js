@@ -1,5 +1,7 @@
 function init() {
   World.getInstance()
+  Monster.getInstance()
+  Player.getInstance()
 }
 
 function render() {
@@ -11,6 +13,10 @@ function animate() {
 
   controls.update()
   TWEEN.update()
+
+  Player.getInstance().update()
+  Monster.getInstance().update()
+  World.getInstance().update()
 
   shaderTime.value = performance.now() / 1000
 

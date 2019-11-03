@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+
+    <title>Gridworld</title>
+
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/three.js/108/three.min.js"
+      integrity="sha256-3mBEX8I0uMLF7+AUjJeTCelosuorzYpqwBMBPDTyQqY="
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/dat-gui/0.7.6/dat.gui.min.js"
+      integrity="sha256-HJ7j+71YYw6Kcs8THwQV9lXmPOcR0eXlg7n8KRTZsyA="
+      crossorigin="anonymous"
+    ></script>
+    <script src="lib/stats.min.js"></script>
+    <script src="lib/noise.js"></script>
+    <script src="lib/tween.umd.js"></script>
+    <script src="lib/OrbitControls.js"></script>
+    <script src="lib/DragControls.js"></script>
+
+    <link rel="stylesheet" href="css/styles.css" />
+    <link rel="icon" href="https://image.flaticon.com/icons/png/512/223/223203.png" />
+  </head>
+  <body>
+    <canvas id="main-cvs"></canvas>
+
+    <div id="description">
+      <span>left click</span> to remove trees; <span>right click</span> to plant trees;
+      <span>shift + left click</span>
+      to kill monster; <span>shift + right click</span> to spawn monster; <span>Q</span> to add
+      random trees; <span>A</span>
+      to remove random trees
+    </div>
+
+    <script src="js/utils/helpers.js"></script>
+    <script src="js/setup/config.js"></script>
+    <script src="js/setup/domElements.js"></script>
+    <script src="js/game/basics.js"></script>
+    <script src="js/game/models.js"></script>
+    <script src="js/game/node.js"></script>
+    <script src="js/game/grid.js"></script>
+    <script src="js/game/monster.js"></script>
+    <script src="js/game/target.js"></script>
+    <script src="js/game/world.js"></script>
+    <script src="js/main.js"></script>
+    <script src="js/setup/domListeners.js"></script>
+  </body>
+</html>

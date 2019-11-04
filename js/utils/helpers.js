@@ -16,9 +16,14 @@ function getRCFromXZ(x, z) {
   return { r: realRCoord, c: realCCoord }
 }
 
-function moveToPositionOnGrid(mesh, r, c) {
+function getRCFromRep(rep) {
+  const [int1, int2] = rep.split('::')
+  return { r: parseInt(int1), c: parseInt(int2) }
+}
+
+function moveToPositionOnGrid(mesh, r, c, y = DIMENSION / 2) {
   // ASSUME `mesh` IS DIMENSION * DIMENSION * DIMENSION
-  mesh.position.y = DIMENSION / 2
+  mesh.position.y = y
 
   const { x: realRPos, z: realCPos } = getXZfromRC(r, c)
 
@@ -33,10 +38,12 @@ function tweenToPositionOnGrid(mesh, r, c, delay = 10) {
 }
 
 function tweenToPositionOnMap(mesh, x, z, delay = 10) {
-  return new TWEEN.Tween(mesh.position)
-    .to({ x, z }, delay)
-    .easing(k => k)
-    .start()
+  return (
+    new TWEEN.Tween(mesh.position)
+      .to({ x, z }, delay)
+      // .easing(k => k)
+      .start()
+  )
 }
 
 function getRCRep(r, c) {
@@ -48,9 +55,21 @@ function clamp(num, min, max) {
 }
 
 function clampPosToMap(vector) {
-  vector.x = clamp(vector.x, -DIMENSION * (DIVISIONS / 2 - 0.5), DIMENSION * (DIVISIONS / 2 - 0.5))
-  vector.y = clamp(vector.y, -DIMENSION * (DIVISIONS / 2 - 0.5), DIMENSION * (DIVISIONS / 2 - 0.5))
-  vector.z = clamp(vector.z, -DIMENSION * (DIVISIONS / 2 - 0.5), DIMENSION * (DIVISIONS / 2 - 0.5))
+  vector.x = clamp(
+    vector.x,
+    -DIMENSION * (DIVISIONS / 2 - 0.5),
+    DIMENSION * (DIVISIONS / 2 - 0.5)
+  )
+  vector.y = clamp(
+    vector.y,
+    -DIMENSION * (DIVISIONS / 2 - 0.5),
+    DIMENSION * (DIVISIONS / 2 - 0.5)
+  )
+  vector.z = clamp(
+    vector.z,
+    -DIMENSION * (DIVISIONS / 2 - 0.5),
+    DIMENSION * (DIVISIONS / 2 - 0.5)
+  )
 }
 
 function clampRC(r, c) {
@@ -80,4 +99,26 @@ function retracePath(startNode, endNode) {
   }
 
   return path
+}
+
+function mouseMoveWhilstDown(target, whileMove) {
+  var endMove = function() {
+    window.removeEventListener('mousemove', whileMove)
+    window.removeEventListener('mouseup', endMove)
+  }
+
+  target.addEventListener('mousedown', function(event) {
+    event.stopPropagation() // remove if you do want it to propagate ..
+    window.addEventListener('mousemove', whileMove)
+    window.addEventListener('mouseup', endMove)
+  })
+}
+
+function getSimplex(r, c) {
+  return (noise.simplex2(r / SIMPLEX_SCALE, c / SIMPLEX_SCALE) + 1) / 2
+}
+
+function shouldObstacle(r, c) {
+  const value = getSimplex(r, c)
+  return value >= 0.5 - NOISE_RANGE / 2 && value <= 0.5 + NOISE_RANGE / 2
 }

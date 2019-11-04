@@ -125,6 +125,8 @@ class MonsterProto {
         newC = this.c + deltaC
 
       this.tween = tweenToPositionOnGrid(this.model, newR, newC, MONSTER_RECALC_DELAY)
+    } else {
+      console.log('wt')
     }
     this.tween.onComplete(() => {
       this.tween = undefined
@@ -147,7 +149,10 @@ const Monster = (function() {
   return {
     getInstance() {
       if (!instance) {
-        const { r: mr, c: mc } = clampRC(Math.random() * DIVISIONS, Math.random() * DIVISIONS)
+        const { r: mr, c: mc } = clampRC(
+          Math.random() * DIVISIONS,
+          Math.random() * DIVISIONS
+        )
         instance = new MonsterProto(mr, mc)
       }
       return instance

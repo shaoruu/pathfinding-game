@@ -6,13 +6,16 @@ class WorldProto {
   init = () => {
     this._initMembers()
     this._initModels()
+    this._initGrid()
   }
 
   render = () => {}
 
   addObstacle = (r, c) => {
+    if (!this.grid.isWalkable(r, c)) return
+
     const temp = obstacleMesh.clone()
-    moveToPositionOnGrid(temp, r, c)
+    moveToPositionOnGrid(temp, r, c, OBSTACLE_HEIGHT / 2)
     temp.name = getRCRep(r, c)
 
     this.grid.setObstacle(r, c)
@@ -27,6 +30,10 @@ class WorldProto {
     if (obj) this.obstacleGroup.remove(obj)
 
     this.grid.removeObstacle(r, c)
+  }
+
+  getObstacleMeshes = () => {
+    return this.obstacleGroup.children
   }
 
   update = () => {}
@@ -52,6 +59,16 @@ class WorldProto {
     scene.add(this.wallGroup)
 
     scene.add(this.obstacleGroup)
+  }
+
+  _initGrid = () => {
+    for (let r = 0; r < DIVISIONS; r++) {
+      for (let c = 0; c < DIVISIONS; c++) {
+        if (shouldObstacle(r, c)) {
+          this.addObstacle(r, c)
+        }
+      }
+    }
   }
 
   _addWall = (r, c) => {

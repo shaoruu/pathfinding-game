@@ -16,6 +16,9 @@ class PlayerProto {
   update = () => {
     this._calculateAcceleration()
     this._doPhysics()
+    if (this.movements.placeObstacle) {
+      this._placeWall()
+    }
   }
 
   _calculateAcceleration = () => {
@@ -26,15 +29,17 @@ class PlayerProto {
   }
 
   _doPhysics = () => {
+    const worldRef = World.getInstance()
+
     const now = performance.now()
-    const delta = now - this.prevTime
+    const delta = (now - this.prevTime) / 1000
 
     // INERTIA
     this.vel.x -= this.vel.x * PLAYER_INERTIA * delta
     this.vel.z -= this.vel.z * PLAYER_INERTIA * delta
 
-    this.acc.multiplyScalar(delta)
     this.vel.add(this.acc)
+    this.vel.multiplyScalar(delta)
 
     this.acc.set(0, 0, 0)
 
@@ -43,9 +48,27 @@ class PlayerProto {
 
     newPos.clamp(this._minPos, this._maxPos)
 
+    const { r: newR, c: newC } = getRCFromXZ(newPos.x, newPos.z)
+    if (newR !== this.r) {
+      const node = worldRef.grid.getNodeFromRC(newR, this.c)
+      if (!node.walkable) {
+        const maxX = (this.r - DIVISIONS / 2) * DIMENSION + PLAYER_DIM / 2
+        newPos.x -= (this.vel.x - maxX) * Math.sign(Number(newR > this.r))
+      }
+    }
+    if (newC !== this.c) {
+      const node = worldRef.grid.getNodeFromRC(this.r, newC)
+      if (!node.walkable) {
+        const maxZ = (this.c - DIVISIONS / 2) * DIMENSION + PLAYER_DIM / 2
+        newPos.z -= (this.vel.z - maxZ) * Math.sign(Number(newC > this.z))
+      }
+    }
+
     this._setRC()
 
     this.model.position.lerp(newPos, PLAYER_LERP_FACTOR)
+
+    this.vel.divideScalar(delta)
 
     this.prevTime = now
   }
@@ -68,20 +91,22 @@ class PlayerProto {
       up: false,
       down: false,
       left: false,
-      right: false
+      right: false,
+      placeObstacle: false
     }
 
     this.prevTime = performance.now()
+    this.lastPlacedObstacle = performance.now()
 
     this._minPos = new THREE.Vector3(
-      (-DIVISIONS / 2 + 0.5) * DIMENSION,
+      (-DIVISIONS / 2) * DIMENSION + PLAYER_DIM / 2,
       -Infinity,
-      (-DIVISIONS / 2 + 0.5) * DIMENSION
+      (-DIVISIONS / 2) * DIMENSION + PLAYER_DIM / 2
     )
     this._maxPos = new THREE.Vector3(
-      (DIVISIONS / 2 - 0.5) * DIMENSION,
+      (DIVISIONS / 2) * DIMENSION - PLAYER_DIM / 2,
       Infinity,
-      (DIVISIONS / 2 - 0.5) * DIMENSION
+      (DIVISIONS / 2) * DIMENSION - PLAYER_DIM / 2
     )
   }
 
@@ -117,6 +142,8 @@ class PlayerProto {
         case 39:
           scope.movements.right = bool
           break
+        case 32:
+          scope.movements.placeObstacle = bool
       }
     }
 
@@ -133,6 +160,14 @@ class PlayerProto {
     window.addEventListener('keydown', this.onKeyDown, false)
     window.addEventListener('keyup', this.onKeyUp, false)
   }
+
+  _placeWall = () => {
+    const now = performance.now()
+    if (now - this.lastPlacedObstacle > PLAYER_OBSTACLE_DELAY) {
+      World.getInstance().addObstacle(this.r, this.c)
+      this.lastPlacedObstacle = now
+    }
+  }
 }
 
 const Player = (function() {
@@ -141,7 +176,10 @@ const Player = (function() {
   return {
     getInstance() {
       if (!instance) {
-        const { r: tr, c: tc } = clampRC(Math.random() * DIVISIONS, Math.random() * DIVISIONS)
+        const { r: tr, c: tc } = clampRC(
+          Math.random() * DIVISIONS,
+          Math.random() * DIVISIONS
+        )
         instance = new PlayerProto(tr, tc)
       }
       return instance

@@ -50,6 +50,10 @@ function tweenToPositionOnMap(mesh, x, z, delay = 10) {
   )
 }
 
+function tweenToRotation(mesh, rotation, delay = 200) {
+  return new TWEEN.Tween(mesh.rotation).to({ y: rotation }, delay).start()
+}
+
 function getRCRep(r, c) {
   return `${r}::${c}`
 }
@@ -113,4 +117,8 @@ function getSimplex(r, c) {
 function shouldObstacle(r, c) {
   const value = getSimplex(r, c)
   return value >= 0.5 - NOISE_RANGE / 2 && value <= 0.5 + NOISE_RANGE / 2
+}
+
+function calcAngleDegrees(x, z) {
+  return Math.atan2(z, x)
 }

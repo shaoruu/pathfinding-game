@@ -12,73 +12,6 @@ class MonsterProto {
     this._setRC()
   }
 
-  findPathToPlayer = () => {
-    this._resetPath()
-
-    const gridRef = World.getInstance().grid
-    const playerRef = Player.getInstance()
-
-    const startNode = gridRef.getNodeFromRC(this.r, this.c)
-    const targetNode = gridRef.getNodeFromRC(playerRef.r, playerRef.c)
-
-    const openSet = []
-    const closedSet = []
-    openSet.push(startNode)
-
-    while (openSet.length > 0) {
-      let node = openSet[0],
-        index = 0
-      for (let i = 1; i < openSet.length; i++) {
-        if (openSet[i].fCost <= node.fCost) {
-          if (openSet[i].hCost < node.hCost) {
-            node = openSet[i]
-            index = i
-          }
-        }
-      }
-
-      openSet.splice(index, 1)
-      closedSet.push(node)
-
-      if (equalNodes(node, targetNode)) {
-        const nodes = retracePath(startNode, targetNode)
-
-        this.direction = nodes[0]
-        nodes.forEach(({ r, c }, index) => {
-          const colorI = Math.floor((255 * index) / nodes.length) / 255
-          const tempMat = new THREE.MeshBasicMaterial()
-          tempMat.color.setHSL(colorI, 0.5, 0.5)
-          const tempMesh = new THREE.Mesh(pathSegmentGeo, tempMat)
-
-          moveToPositionOnGrid(tempMesh, r, c)
-
-          this.pathGroup.add(tempMesh)
-        })
-
-        return
-      }
-
-      const neighbors = gridRef.getNeighborNodes(node)
-
-      neighbors.forEach(neighbor => {
-        if (!neighbor.walkable || closedSet.includes(neighbor)) {
-          return
-        }
-
-        let newCostToNeighbor = node.gCost + getNodalDistance(node, neighbor)
-        if (newCostToNeighbor < neighbor.gCost || !openSet.includes(neighbor)) {
-          neighbor.gCost = newCostToNeighbor
-          neighbor.hCost = getNodalDistance(neighbor, targetNode)
-          neighbor.parent = node
-
-          if (!openSet.includes(neighbor)) openSet.push(neighbor)
-        }
-      })
-    }
-
-    this.direction = null
-  }
-
   update = () => {}
 
   _initMembers = (r, c) => {
@@ -113,7 +46,7 @@ class MonsterProto {
   }
 
   _followPlayer = () => {
-    this.findPathToPlayer()
+    this._findPathToPlayer()
 
     if (!this.direction) return
 
@@ -124,6 +57,16 @@ class MonsterProto {
       const newR = this.r + deltaR,
         newC = this.c + deltaC
 
+      let rotation = 0
+      if (deltaR > 0 && deltaC > 0) rotation = Math.PI / 4
+      else if (deltaR > 0 && deltaC < 0) rotation = (3 * Math.PI) / 4
+      else if (deltaR < 0 && deltaC > 0) rotation = -Math.PI / 4
+      else if (deltaR < 0 && deltaC < 0) rotation = (-3 * Math.PI) / 4
+      else if (deltaR < 0) rotation = -Math.PI / 2
+      else if (deltaR > 0) rotation = Math.PI / 2
+      else if (deltaC < 0) rotation = -Math.PI
+
+      tweenToRotation(this.model, rotation)
       this.tween = tweenToPositionOnGrid(this.model, newR, newC, MONSTER_RECALC_DELAY)
     } else {
       console.log('wt')
@@ -133,6 +76,61 @@ class MonsterProto {
     })
 
     this._setRC()
+  }
+
+  _findPathToPlayer = () => {
+    this._resetPath()
+
+    const gridRef = World.getInstance().grid
+    const playerRef = Player.getInstance()
+
+    const startNode = gridRef.getNodeFromRC(this.r, this.c)
+    const targetNode = gridRef.getNodeFromRC(playerRef.r, playerRef.c)
+
+    const openSet = []
+    const closedSet = []
+    openSet.push(startNode)
+
+    while (openSet.length > 0) {
+      let node = openSet[0],
+        index = 0
+      for (let i = 1; i < openSet.length; i++) {
+        if (openSet[i].fCost <= node.fCost) {
+          if (openSet[i].hCost < node.hCost) {
+            node = openSet[i]
+            index = i
+          }
+        }
+      }
+
+      openSet.splice(index, 1)
+      closedSet.push(node)
+
+      if (equalNodes(node, targetNode)) {
+        const nodes = retracePath(startNode, targetNode)
+        this.direction = nodes[0]
+        return
+      }
+
+      const neighbors = gridRef.getNeighborNodes(node)
+
+      neighbors.forEach(neighbor => {
+        if (!neighbor.walkable || closedSet.includes(neighbor)) {
+          return
+        }
+
+        let newCostToNeighbor = node.gCost + getNodalDistance(node, neighbor)
+        if (newCostToNeighbor < neighbor.gCost || !openSet.includes(neighbor)) {
+          neighbor.gCost = newCostToNeighbor
+          neighbor.hCost = getNodalDistance(neighbor, targetNode)
+          neighbor.parent = node
+
+          if (!openSet.includes(neighbor)) openSet.push(neighbor)
+        }
+      })
+    }
+
+    this.direction = null
   }
 
   _resetPath = () => {
@@ -149,10 +147,7 @@ const Monster = (function() {
   return {
     getInstance() {
       if (!instance) {
-        const { r: mr, c: mc } = clampRC(
-          Math.random() * DIVISIONS,
-          Math.random() * DIVISIONS
-        )
+        const { r: mr, c: mc } = clampRC(Math.random() * DIVISIONS, Math.random() * DIVISIONS)
         instance = new MonsterProto(mr, mc)
       }
       return instance

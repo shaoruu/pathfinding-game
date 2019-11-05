@@ -58,7 +58,7 @@ class Grid {
 
   removeObstacle = (r, c) => {
     const node = this.getNodeFromRC(r, c)
-    node.walkable = true
+    if (node) node.walkable = true
   }
 
   reset = () => {

@@ -48,20 +48,12 @@ class PlayerProto {
 
     newPos.clamp(this._minPos, this._maxPos)
 
-    const { r: newR, c: newC } = getRCFromXZ(newPos.x, newPos.z)
-    if (newR !== this.r) {
-      const node = worldRef.grid.getNodeFromRC(newR, this.c)
-      if (!node.walkable) {
-        const maxX = (this.r - DIVISIONS / 2) * DIMENSION + PLAYER_DIM / 2
-        newPos.x -= (this.vel.x - maxX) * Math.sign(Number(newR > this.r))
-      }
-    }
-    if (newC !== this.c) {
-      const node = worldRef.grid.getNodeFromRC(this.r, newC)
-      if (!node.walkable) {
-        const maxZ = (this.c - DIVISIONS / 2) * DIMENSION + PLAYER_DIM / 2
-        newPos.z -= (this.vel.z - maxZ) * Math.sign(Number(newC > this.z))
-      }
+    if (Math.abs(this.vel.x) > Math.abs(this.vel.z)) {
+      newPos.x = this._handleXCollisions(newPos)
+      newPos.z = this._handleZCollisions(newPos)
+    } else {
+      newPos.z = this._handleZCollisions(newPos)
+      newPos.x = this._handleXCollisions(newPos)
     }
 
     this._setRC()
@@ -161,6 +153,115 @@ class PlayerProto {
     window.addEventListener('keyup', this.onKeyUp, false)
   }
 
+  _handleXCollisions = newPos => {
+    let fixedX = newPos.x
+
+    const worldRef = World.getInstance()
+
+    const minRBounds = getGridUnitFromMap(newPos.x - PLAYER_DIM / 2)
+    const maxRBounds = getGridUnitFromMap(newPos.x + PLAYER_DIM / 2)
+
+    // BODY BLOCK
+    const minCBounds = getGridUnitFromMap(this.model.position.z - PLAYER_DIM / 2)
+    const maxCBounds = getGridUnitFromMap(this.model.position.z + PLAYER_DIM / 2)
+
+    if (minRBounds !== this.r) {
+      // THIS MEANS THE NEW POSITION IS OVER TO A LOWER R
+      const node = worldRef.grid.getNodeFromRC(minRBounds, this.c)
+      if (node && !node.walkable) {
+        fixedX = (minRBounds - DIVISIONS / 2 + 1) * DIMENSION + PLAYER_DIM / 2 + EPSILON
+      }
+
+      // BODY BLOCK
+      if (minCBounds !== this.c) {
+        const node = worldRef.grid.getNodeFromRC(minRBounds, minCBounds)
+        if (node && !node.walkable) {
+          fixedX = (minRBounds - DIVISIONS / 2 + 1) * DIMENSION + PLAYER_DIM / 2 + EPSILON
+        }
+      } else if (maxCBounds !== this.c) {
+        const node = worldRef.grid.getNodeFromRC(minRBounds, maxCBounds)
+        if (node && !node.walkable) {
+          fixedX = (minRBounds - DIVISIONS / 2 + 1) * DIMENSION + PLAYER_DIM / 2 + EPSILON
+        }
+      }
+    } else if (maxRBounds !== this.r) {
+      // THIS MEANS THE NEW POSITION IS OVER TO A UPPER R
+      const node = worldRef.grid.getNodeFromRC(maxRBounds, this.c)
+      if (node && !node.walkable) {
+        fixedX = (maxRBounds - DIVISIONS / 2) * DIMENSION - PLAYER_DIM / 2 - EPSILON
+      }
+
+      // BODY BLOCK
+      if (minCBounds !== this.c) {
+        const node = worldRef.grid.getNodeFromRC(maxRBounds, minCBounds)
+        if (node && !node.walkable) {
+          fixedX = (maxRBounds - DIVISIONS / 2) * DIMENSION - PLAYER_DIM / 2 - EPSILON
+        }
+      } else if (maxCBounds !== this.c) {
+        const node = worldRef.grid.getNodeFromRC(maxRBounds, maxCBounds)
+        if (node && !node.walkable) {
+          fixedX = (maxRBounds - DIVISIONS / 2) * DIMENSION - PLAYER_DIM / 2 - EPSILON
+        }
+      }
+    }
+
+    // newPos.x = fixedX
+    return fixedX
+  }
+
+  _handleZCollisions = newPos => {
+    let fixedZ = newPos.z
+
+    const worldRef = World.getInstance()
+
+    const minCBounds = getGridUnitFromMap(newPos.z - PLAYER_DIM / 2)
+    const maxCBounds = getGridUnitFromMap(newPos.z + PLAYER_DIM / 2)
+
+    // BODY BLOCK
+    const minRBounds = getGridUnitFromMap(this.model.position.x - PLAYER_DIM / 2)
+    const maxRBounds = getGridUnitFromMap(this.model.position.x + PLAYER_DIM / 2)
+
+    if (minCBounds !== this.c) {
+      const node = worldRef.grid.getNodeFromRC(this.r, minCBounds)
+      if (node && !node.walkable) {
+        fixedZ = (minCBounds - DIVISIONS / 2 + 1) * DIMENSION + PLAYER_DIM / 2 + EPSILON
+      }
+
+      // BODY BLOCK
+      if (minRBounds !== this.r) {
+        const node = worldRef.grid.getNodeFromRC(minRBounds, minCBounds)
+        if (node && !node.walkable) {
+          fixedZ = (minCBounds - DIVISIONS / 2 + 1) * DIMENSION + PLAYER_DIM / 2 + EPSILON
+        }
+      } else if (maxRBounds !== this.r) {
+        const node = worldRef.grid.getNodeFromRC(maxRBounds, minCBounds)
+        if (node && !node.walkable) {
+          fixedZ = (minCBounds - DIVISIONS / 2 + 1) * DIMENSION + PLAYER_DIM / 2 + EPSILON
+        }
+      }
+    } else if (maxCBounds !== this.c) {
+      const node = worldRef.grid.getNodeFromRC(this.r, maxCBounds)
+      if (node && !node.walkable) {
+        fixedZ = (maxCBounds - DIVISIONS / 2) * DIMENSION - PLAYER_DIM / 2 - EPSILON
+      }
+
+      // BODY BLOCK
+      if (minRBounds !== this.r) {
+        const node = worldRef.grid.getNodeFromRC(minRBounds, maxCBounds)
+        if (node && !node.walkable) {
+          fixedZ = (maxCBounds - DIVISIONS / 2) * DIMENSION - PLAYER_DIM / 2 - EPSILON
+        }
+      } else if (maxRBounds !== this.r) {
+        const node = worldRef.grid.getNodeFromRC(maxRBounds, maxCBounds)
+        if (node && !node.walkable) {
+          fixedZ = (maxCBounds - DIVISIONS / 2) * DIMENSION - PLAYER_DIM / 2 - EPSILON
+        }
+      }
+    }
+
+    return fixedZ
+  }
+
   _placeWall = () => {
     const now = performance.now()
     if (now - this.lastPlacedObstacle > PLAYER_OBSTACLE_DELAY) {
@@ -176,10 +277,7 @@ const Player = (function() {
   return {
     getInstance() {
       if (!instance) {
-        const { r: tr, c: tc } = clampRC(
-          Math.random() * DIVISIONS,
-          Math.random() * DIVISIONS
-        )
+        const { r: tr, c: tc } = clampRC(Math.random() * DIVISIONS, Math.random() * DIVISIONS)
         instance = new PlayerProto(tr, tc)
       }
       return instance

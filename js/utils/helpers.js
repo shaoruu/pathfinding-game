@@ -9,9 +9,13 @@ function getXZfromRC(r, c) {
   }
 }
 
+function getGridUnitFromMap(value) {
+  return Math.round((value - DIMENSION / 2) / DIMENSION + DIVISIONS / 2)
+}
+
 function getRCFromXZ(x, z) {
-  const realRCoord = Math.round((x - DIMENSION / 2) / DIMENSION + DIVISIONS / 2)
-  const realCCoord = Math.round((z - DIMENSION / 2) / DIMENSION + DIVISIONS / 2)
+  const realRCoord = getGridUnitFromMap(x)
+  const realCCoord = getGridUnitFromMap(z)
 
   return { r: realRCoord, c: realCCoord }
 }
@@ -55,21 +59,9 @@ function clamp(num, min, max) {
 }
 
 function clampPosToMap(vector) {
-  vector.x = clamp(
-    vector.x,
-    -DIMENSION * (DIVISIONS / 2 - 0.5),
-    DIMENSION * (DIVISIONS / 2 - 0.5)
-  )
-  vector.y = clamp(
-    vector.y,
-    -DIMENSION * (DIVISIONS / 2 - 0.5),
-    DIMENSION * (DIVISIONS / 2 - 0.5)
-  )
-  vector.z = clamp(
-    vector.z,
-    -DIMENSION * (DIVISIONS / 2 - 0.5),
-    DIMENSION * (DIVISIONS / 2 - 0.5)
-  )
+  vector.x = clamp(vector.x, -DIMENSION * (DIVISIONS / 2 - 0.5), DIMENSION * (DIVISIONS / 2 - 0.5))
+  vector.y = clamp(vector.y, -DIMENSION * (DIVISIONS / 2 - 0.5), DIMENSION * (DIVISIONS / 2 - 0.5))
+  vector.z = clamp(vector.z, -DIMENSION * (DIVISIONS / 2 - 0.5), DIMENSION * (DIVISIONS / 2 - 0.5))
 }
 
 function clampRC(r, c) {

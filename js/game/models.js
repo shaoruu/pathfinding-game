@@ -29,7 +29,11 @@ monsterMaterial.onBeforeCompile = shader => {
   shader.vertexShader = shader.vertexShader.replace(token, customTransform)
 }
 
-const monsterArrGeo = new THREE.ConeBufferGeometry(MONSTER_RADIUS / 4, MONSTER_RADIUS / 2, 32)
+const monsterArrGeo = new THREE.ConeBufferGeometry(
+  MONSTER_RADIUS / 4,
+  MONSTER_RADIUS / 2,
+  32
+)
 const monsterArrMat = new THREE.MeshLambertMaterial({ color: MONSTER_RAY_ARROW_COLOR })
 const monsterArrMesh = new THREE.Mesh(monsterArrGeo, monsterArrMat)
 
@@ -64,7 +68,11 @@ playerMaterial.onBeforeCompile = shader => {
   shader.vertexShader = shader.vertexShader.replace(token, customTransform)
 }
 
-const playerArrGeo = new THREE.ConeBufferGeometry(PLAYER_RADIUS / 4, PLAYER_RADIUS / 2, 32)
+const playerArrGeo = new THREE.ConeBufferGeometry(
+  PLAYER_RADIUS / 4,
+  PLAYER_RADIUS / 2,
+  32
+)
 const playerArrMat = new THREE.MeshLambertMaterial({ color: PLAYER_RAY_ARROW_COLOR })
 const playerArrMesh = new THREE.Mesh(playerArrGeo, playerArrMat)
 
@@ -80,14 +88,20 @@ playerMesh.position.y = PLAYER_RADIUS
 /* -------------------------------------------------------------------------- */
 /*                                    WORLD                                   */
 /* -------------------------------------------------------------------------- */
-const platformGeo = new THREE.PlaneBufferGeometry(DIMENSION * DIVISIONS, DIMENSION * DIVISIONS)
-const platformMat = new THREE.MeshStandardMaterial({ color: WORLD_PLATFORM_COLOR, roughness: 0.8 })
+const platformGeo = new THREE.PlaneBufferGeometry(
+  DIMENSION * DIVISIONS,
+  DIMENSION * DIVISIONS
+)
+const platformMat = new THREE.MeshStandardMaterial({
+  color: WORLD_PLATFORM_COLOR,
+  roughness: 0.8
+})
 const platformMesh = new THREE.Mesh(platformGeo, platformMat)
 
 platformMesh.rotation.x = -Math.PI / 2
 
 const wallGeo = new THREE.BoxBufferGeometry(DIMENSION, DIMENSION, DIMENSION)
-const wallMat = new THREE.MeshStandardMaterial({ color: WORLD_WALL_COLOR })
+const wallMat = new THREE.MeshLambertMaterial({ color: WORLD_WALL_COLOR })
 const wallMesh = new THREE.Mesh(wallGeo, wallMat)
 
 // const monsterGeo = new THREE.BoxBufferGeometry(MONSTER_DIM, MONSTER_DIM, MONSTER_DIM)
@@ -98,7 +112,11 @@ const wallMesh = new THREE.Mesh(wallGeo, wallMat)
 // const playerMat = new THREE.MeshBasicMaterial({ color: TARGET_COLOR })
 // const playerMesh = new THREE.Mesh(playerGeo, playerMat)
 
-const pathSegmentGeo = new THREE.BoxBufferGeometry(DIMENSION / 2, DIMENSION / 2, DIMENSION / 2)
+const pathSegmentGeo = new THREE.BoxBufferGeometry(
+  DIMENSION / 2,
+  DIMENSION / 2,
+  DIMENSION / 2
+)
 const pathSegmentMat = new THREE.MeshLambertMaterial({ color: PATH_COLOR })
 const pathSegmentMesh = new THREE.Mesh(pathSegmentGeo, pathSegmentMat)
 
@@ -111,26 +129,32 @@ const obstacleMat = new THREE.MeshStandardMaterial({
 })
 const obstacleMesh = new THREE.Mesh(obstacleGeo, obstacleMat)
 
-const treasure1Geo = new THREE.BoxBufferGeometry(DIMENSION / 3, DIMENSION / 3, DIMENSION / 3)
+const treasure1Geo = new THREE.BoxBufferGeometry(
+  DIMENSION / 3,
+  DIMENSION / 3,
+  DIMENSION / 3
+)
 const treasure1Mat = new THREE.MeshStandardMaterial({
-  color: 0xffffff,
-  transparent: true,
-  opacity: 0.3
+  color: 0xf45905
 })
 const treasure1Mesh = new THREE.Mesh(treasure1Geo, treasure1Mat)
 treasure1Mesh.position.set(0, 0, 0)
 
-const treasure2Geo = new THREE.BoxBufferGeometry(DIMENSION / 4, DIMENSION / 9, DIMENSION / 4)
-const treasure2Mat = new THREE.MeshStandardMaterial({ color: 0xeeeeee })
+const treasure2Geo = new THREE.BoxBufferGeometry(
+  DIMENSION / 4,
+  DIMENSION / 9,
+  DIMENSION / 4
+)
+const treasure2Mat = new THREE.MeshStandardMaterial({ color: 0xc70d3a })
 const treasure2Mesh = new THREE.Mesh(treasure2Geo, treasure2Mat)
 
 treasure2Mesh.position.set(0, 0, 0)
 treasure2Mesh.position.y = DIMENSION / 5
 
-const treasureLight = new THREE.PointLight(0x999900, 5, DIMENSION)
-treasureLight.position.copy(treasure1Mesh.position)
+// const treasureLight = new THREE.PointLight(0x999900, 5, DIMENSION)
+// treasureLight.position.copy(treasure1Mesh.position)
 
 const treasureGroup = new THREE.Group()
 treasureGroup.add(treasure1Mesh)
 treasureGroup.add(treasure2Mesh)
-treasureGroup.add(treasureLight)
+// treasureGroup.add(treasureLight)

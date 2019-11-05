@@ -41,8 +41,8 @@ controls.maxPolarAngle = Math.PI / 2
 /* -------------------------------------------------------------------------- */
 /*                                   LIGHTS                                   */
 /* -------------------------------------------------------------------------- */
-const light1 = new THREE.DirectionalLight(0xffffff)
-light1.position.set(0, 620, -863)
+const light1 = new THREE.DirectionalLight(0xffffff, 1.1)
+light1.position.set(100, 600, -800)
 scene.add(light1)
 // const light2 = new THREE.DirectionalLight(0x002288)
 // light2.position.set(-1, -1, -1)

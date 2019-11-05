@@ -7,15 +7,15 @@ const FOG_FAR = 3000
 /* -------------------------------------------------------------------------- */
 /*                                    GAME                                    */
 /* -------------------------------------------------------------------------- */
-const DIVISIONS = 20 // blocks per side of map
-const DIMENSION = 40 // pixels per block
+const DIVISIONS = 16 // blocks per side of map
+const DIMENSION = 50 // pixels per block
 
 const MONSTER_TAG = 'MONSTER-TAG'
 const MONSTER_SPEED = 10
 const MONSTER_RADIUS = 20
 const MONSTER_DIM = 30
-const MONSTER_MIN_RECALC_DELAY = 185
-const MONSTER_MAX_RECALC_DELAY = 215
+const MONSTER_MIN_RECALC_DELAY = 200
+const MONSTER_MAX_RECALC_DELAY = 400
 const MONSTER_EYE_DIST = 15
 const MONSTER_SPAWN_DELAY = 1000
 
@@ -24,7 +24,7 @@ const PLAYER_ACCELERATION = 20
 const PLAYER_INERTIA = 5.5
 const PLAYER_LERP_FACTOR = 0.9
 const PLAYER_OBSTACLE_DELAY = 500
-const PLAYER_RADIUS = 12.5
+const PLAYER_RADIUS = 16
 const PLAYER_DIM = 15
 
 const TREASURE_TAG = 'TREASURE-TAG'

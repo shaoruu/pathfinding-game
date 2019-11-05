@@ -1,24 +1,32 @@
 class PlayerProto {
-  constructor(r, c) {
-    this.init(r, c)
+  constructor() {
+    this.init()
   }
 
-  init = (r, c) => {
-    this._initMembers(r, c)
-    this._initModels(r, c)
+  init = () => {
+    this._initMembers()
+    this._initModels()
     this._initListeners()
   }
 
-  dragged = () => {
-    this._setRC()
-  }
-
   update = () => {
+    if (this.dead) return
+
     this._calculateAcceleration()
     this._doPhysics()
+    this._setFacing()
     this._rotatePlayer()
+    this._interactWorld()
+
     if (this.movements.placeObstacle) this._placeWall()
     else if (this.movements.breakObstacle) this._breakWall()
+  }
+
+  reset = () => {
+    this.dead = false
+
+    this._resetScore()
+    this._resetRC()
   }
 
   _calculateAcceleration = () => {
@@ -72,9 +80,41 @@ class PlayerProto {
     this.c = c
   }
 
-  _initMembers = (r, c) => {
-    this.r = Math.floor(r)
-    this.c = Math.floor(c)
+  _setFacing = () => {
+    const { up, down, left, right } = this.movements
+
+    if (up) this.facing = UP
+    else if (down) this.facing = DOWN
+    else if (left) this.facing = LEFT
+    else if (right) this.facing = RIGHT
+  }
+
+  _interactWorld = () => {
+    const worldRef = World.getInstance()
+
+    // TREASURE DETECT
+    const foundTreasure = worldRef.isTreasureAt(this.r, this.c)
+    if (foundTreasure) {
+      worldRef.removeTreasure(this.r, this.c)
+      this._addScore()
+    }
+
+    // MONSTER DETECT
+    const onMonster = Monsters.isOneOn(this.r, this.c)
+    if (onMonster) {
+      Player.gameover()
+      this.dead = true
+    }
+
+    // WIN DETECT
+    if (worldRef.treasures.size === 0) {
+      Monsters.upgrade()
+      World.upgrade()
+    }
+  }
+
+  _initMembers = () => {
+    this._resetRC()
 
     this.vel = new THREE.Vector3(0, 0, 0)
     this.acc = new THREE.Vector3(0, 0, 0)
@@ -102,17 +142,20 @@ class PlayerProto {
       Infinity,
       (DIVISIONS / 2) * DIMENSION - PLAYER_RADIUS
     )
+
+    this.score = 0
+
+    this.dead = false
   }
 
-  _initModels = (r, c) => {
+  _initModels = () => {
     this.model = playerMesh.clone()
 
     this.model.name = PLAYER_TAG
 
-    moveToPositionOnGrid(this.model, r, c)
+    moveToPositionOnGrid(this.model, this.r, this.c)
 
     scene.add(this.model)
-    draggables.push(this.model)
   }
 
   _initListeners = () => {
@@ -270,6 +313,21 @@ class PlayerProto {
     return fixedZ
   }
 
+  _addScore = () => {
+    scoreEle.innerHTML = `Score: ${++this.score}`
+    scoreEle.style.fontSize = '3.5vh'
+    scoreEle.style.color = '#eeeeee'
+    setTimeout(() => {
+      scoreEle.style.fontSize = '3vh'
+      scoreEle.style.color = '#a0a0a0'
+    }, 1000)
+  }
+
+  _resetScore = () => {
+    this.score = 0
+    scoreEle.innerHTML = `Score: 0`
+  }
+
   _rotatePlayer = () => {
     const rotation = -calcAngleDegrees(this.vel.x, this.vel.z) + Math.PI / 2
     tweenToRotation(this.model, rotation, 5)
@@ -289,14 +347,40 @@ class PlayerProto {
       const worldRef = World.getInstance()
       const { up, down, left, right } = this.movements
 
-      if (up && !down) worldRef.removeObstacle(this.r, this.c - 1)
-      else if (down && !up) worldRef.removeObstacle(this.r, this.c + 1)
-
-      if (left && !right) worldRef.removeObstacle(this.r - 1, this.c)
-      else if (right && !left) worldRef.removeObstacle(this.r + 1, this.c)
+      switch (this.facing) {
+        case UP:
+          worldRef.removeObstacle(this.r, this.c - 1)
+          break
+        case DOWN:
+          worldRef.removeObstacle(this.r, this.c + 1)
+          break
+        case LEFT:
+          worldRef.removeObstacle(this.r - 1, this.c)
+          break
+        case RIGHT:
+          worldRef.removeObstacle(this.r + 1, this.c)
+          break
+      }
 
       this.lastBrokeObstacle = now
     }
+  }
+
+  _resetRC = () => {
+    let r, c
+    while (true) {
+      const { r: mr, c: mc } = clampRC(
+        Math.floor(Math.random() * DIVISIONS),
+        Math.floor(Math.random() * DIVISIONS)
+      )
+      if (World.getInstance().grid.isWalkable(mr, mc)) {
+        r = mr
+        c = mc
+        break
+      }
+    }
+    this.r = r
+    this.c = c
   }
 }
 
@@ -308,7 +392,10 @@ const Player = (function() {
       if (!instance) {
         let r, c
         while (true) {
-          const { r: tr, c: tc } = clampRC(Math.random() * DIVISIONS, Math.random() * DIVISIONS)
+          const { r: tr, c: tc } = clampRC(
+            Math.floor(Math.random() * DIVISIONS),
+            Math.floor(Math.random() * DIVISIONS)
+          )
           if (World.getInstance().grid.isWalkable(tr, tc)) {
             r = tr
             c = tc
@@ -318,6 +405,15 @@ const Player = (function() {
         instance = new PlayerProto(r, c)
       }
       return instance
+    },
+    gameover() {
+      modalEle.style.top = '50%'
+      Monsters.getInstances().forEach(monster => {
+        monster.gameover()
+      })
+    },
+    restart() {
+      instance.reset()
     }
   }
 })()

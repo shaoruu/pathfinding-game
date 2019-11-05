@@ -1,6 +1,6 @@
 function init() {
   World.getInstance()
-  Monster.getInstance()
+  Monsters.init(2)
   Player.getInstance()
 }
 
@@ -9,30 +9,23 @@ function render() {
 }
 
 function animate() {
-  stats.begin()
+  // stats.begin()
 
   controls.update()
   TWEEN.update()
 
   Player.getInstance().update()
-  Monster.getInstance().update()
+  Monsters.update()
   World.getInstance().update()
 
   shaderTime.value = performance.now() / 1000
 
   render()
 
-  stats.end()
+  // stats.end()
 
   requestAnimationFrame(animate)
 }
 
 init()
 animate()
-
-function decisionLoop() {
-  // Monsters.update()
-  window.setTimeout(decisionLoop, params.decisionInterval)
-}
-
-decisionLoop()

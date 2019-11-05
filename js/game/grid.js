@@ -39,8 +39,9 @@ class Grid {
         let checkR = node.r + i
         let checkC = node.c + j
 
-        if (checkR >= 0 && checkR < DIVISIONS && checkC >= 0 && checkC < DIVISIONS)
+        if (rcWithinBounds(checkR, checkC)) {
           neighbors.push(this.getNodeFromRC(checkR, checkC))
+        }
       }
     }
 

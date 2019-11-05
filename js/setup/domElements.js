@@ -1,1 +1,5 @@
 const canvas = document.getElementById('main-cvs')
+const scoreEle = document.getElementById('score-display')
+const levelEle = document.getElementById('level-display')
+const modalEle = document.getElementById('modal')
+const restartEle = document.getElementById('restart')

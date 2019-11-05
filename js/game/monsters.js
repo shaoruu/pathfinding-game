@@ -1,41 +1,63 @@
 class MonsterProto {
-  constructor(r, c) {
-    this.init(r, c)
+  constructor() {
+    this.init()
   }
 
-  init = (r, c) => {
-    this._initMembers(r, c)
-    this._initModels(r, c)
-  }
-
-  dragged = () => {
-    this._setRC()
+  init = () => {
+    this._initMembers()
+    this._initModels()
+    this._initInterval()
   }
 
   update = () => {}
 
-  _initMembers = (r, c) => {
-    this.r = Math.floor(r)
-    this.c = Math.floor(c)
+  gameover = () => {
+    clearInterval(this.followPlayerInterval)
+    clearTimeout(this.monsterSpawnTimeout)
+  }
+
+  reset = () => {
+    this._resetRC()
+    moveToPositionOnGrid(this.model, this.r, this.c)
+    this._initInterval()
+  }
+
+  remove = () => {
+    clearInterval(this.followPlayerInterval)
+    clearTimeout(this.monsterSpawnTimeout)
+    removeObjFromSceneByName(this.name)
+  }
+
+  _initMembers = () => {
+    this._resetRC()
 
     this.pathGroup = new THREE.Group()
 
     this.prevTime = performance.now()
 
-    this.followPlayerInterval = setInterval(this._followPlayer, MONSTER_RECALC_DELAY)
+    this.name = getMonsterRep(this.r, this.c)
   }
 
-  _initModels = (r, c) => {
+  _initModels = () => {
     this.model = monsterMesh.clone()
 
-    this.model.name = MONSTER_TAG
+    this.model.name = this.name
 
-    moveToPositionOnGrid(this.model, r, c)
+    moveToPositionOnGrid(this.model, this.r, this.c)
 
     scene.add(this.model)
-    draggables.push(this.model)
 
     scene.add(this.pathGroup)
+  }
+
+  _initInterval = () => {
+    this.monsterSpawnTimeout = setTimeout(() => {
+      this.recalcDelay =
+        (MONSTER_MAX_RECALC_DELAY - MONSTER_MIN_RECALC_DELAY) * Math.random() +
+        MONSTER_MIN_RECALC_DELAY
+
+      this.followPlayerInterval = setInterval(this._followPlayer, this.recalcDelay)
+    }, MONSTER_SPAWN_DELAY)
   }
 
   _setRC = () => {
@@ -45,7 +67,28 @@ class MonsterProto {
     this.c = c
   }
 
+  _resetRC = () => {
+    let r, c
+    while (true) {
+      const { r: mr, c: mc } = clampRC(
+        Math.floor(Math.random() * DIVISIONS),
+        Math.floor(Math.random() * DIVISIONS)
+      )
+      if (World.getInstance().grid.isWalkable(mr, mc)) {
+        r = mr
+        c = mc
+        break
+      }
+    }
+    this.r = r
+    this.c = c
+  }
+
   _followPlayer = () => {
+    const playerRef = Player.getInstance()
+    const distanceToPlayer = Math.sqrt((this.r - playerRef.r) ** 2 + (this.c - playerRef.c) ** 2)
+    if (distanceToPlayer > MONSTER_EYE_DIST) return
+
     this._findPathToPlayer()
 
     if (!this.direction) return
@@ -67,9 +110,7 @@ class MonsterProto {
       else if (deltaC < 0) rotation = -Math.PI
 
       tweenToRotation(this.model, rotation)
-      this.tween = tweenToPositionOnGrid(this.model, newR, newC, MONSTER_RECALC_DELAY)
-    } else {
-      console.log('wt')
+      this.tween = tweenToPositionOnGrid(this.model, newR, newC, this.recalcDelay)
     }
     this.tween.onComplete(() => {
       this.tween = undefined
@@ -115,7 +156,11 @@ class MonsterProto {
       const neighbors = gridRef.getNeighborNodes(node)
 
       neighbors.forEach(neighbor => {
-        if (!neighbor.walkable || closedSet.includes(neighbor)) {
+        if (
+          isDiagonallyTrapped(node, neighbor) ||
+          !neighbor.walkable ||
+          closedSet.includes(neighbor)
+        ) {
           return
         }
 
@@ -141,16 +186,52 @@ class MonsterProto {
   }
 }
 
-const Monster = (function() {
-  let instance = null
+const Monsters = (function() {
+  let instances = new Map()
+  let count
 
   return {
-    getInstance() {
-      if (!instance) {
-        const { r: mr, c: mc } = clampRC(Math.random() * DIVISIONS, Math.random() * DIVISIONS)
-        instance = new MonsterProto(mr, mc)
+    getInstances() {
+      return instances
+    },
+    getInstanceByName(name) {
+      return instances.get(name)
+    },
+    addInstance() {
+      const newInstance = new MonsterProto()
+      instances.set(newInstance.name, newInstance)
+      return newInstance
+    },
+    removeInstance(name) {
+      instances.delete(name)
+    },
+    init(c) {
+      count = c
+      for (let i = 0; i < c; i++) {
+        this.addInstance()
       }
-      return instance
+    },
+    isOneOn(r, c) {
+      let isOn = false
+
+      instances.forEach(monster => {
+        if (monster.r === r && monster.c === c) isOn = true
+      })
+
+      return isOn
+    },
+    update() {
+      instances.forEach(m => m.update())
+    },
+    upgrade() {
+      this.addInstance()
+    },
+    restart() {
+      instances.forEach(monster => {
+        monster.remove()
+      })
+      instances.clear()
+      this.init(count)
     }
   }
 })()

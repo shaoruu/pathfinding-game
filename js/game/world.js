@@ -7,6 +7,7 @@ class WorldProto {
     this._initMembers()
     this._initModels()
     this._initGrid()
+    this._initTreasures(3)
   }
 
   render = () => {}
@@ -32,11 +33,43 @@ class WorldProto {
     this.grid.removeObstacle(r, c)
   }
 
+  removeTreasure = (r, c) => {
+    const name = getTreasureRep(r, c)
+    const obj = scene.getObjectByName(name)
+    if (obj) scene.remove(obj)
+    this.treasures.delete(name)
+  }
+
+  isTreasureAt = (r, c) => {
+    const name = getTreasureRep(r, c)
+    return this.treasures.has(name)
+  }
+
   getObstacleMeshes = () => {
     return this.obstacleGroup.children
   }
 
   update = () => {}
+
+  upgrade = () => {
+    this.treasures.forEach(treasure => {
+      removeObjFromSceneByName(treasure.name)
+    })
+
+    if (this.level % 3 === 0) this.treasureCount++
+
+    this._initTreasures(this.treasureCount)
+    this._advanceLevel()
+  }
+
+  reset = () => {
+    this.treasures.forEach(treasure => {
+      removeObjFromSceneByName(treasure.name)
+    })
+
+    this._initTreasures()
+    this._resetLevel()
+  }
 
   _initMembers = () => {
     this.wallGroup = new THREE.Group()
@@ -46,6 +79,10 @@ class WorldProto {
     this.grid = new Grid()
 
     this.prevTime = performance.now()
+
+    this.treasureCount = 3
+
+    this.level = 1
   }
 
   _initModels = () => {
@@ -71,12 +108,29 @@ class WorldProto {
     }
   }
 
+  _initTreasures = (count = 3) => {
+    this.treasures = new Map()
+    for (let i = 0; i < count; i++) {
+      const newT = new Treasure()
+      this.treasures.set(newT.model.name, newT)
+    }
+  }
+
   _addWall = (r, c) => {
     const temp = wallMesh.clone()
     moveToPositionOnGrid(temp, r, c)
     temp.name = getRCRep(r, c)
 
     this.wallGroup.add(temp)
+  }
+
+  _advanceLevel = () => {
+    levelEle.innerHTML = `Level ${++this.level}`
+  }
+
+  _resetLevel = () => {
+    this.level = 1
+    levelEle.innerHTML = `Level 1`
   }
 }
 
@@ -87,6 +141,12 @@ const World = (function() {
     getInstance() {
       if (!instance) instance = new WorldProto()
       return instance
+    },
+    upgrade() {
+      instance.upgrade()
+    },
+    restart() {
+      instance.reset()
     }
   }
 })()

@@ -122,3 +122,34 @@ function shouldObstacle(r, c) {
 function calcAngleDegrees(x, z) {
   return Math.atan2(z, x)
 }
+
+function rcWithinBounds(checkR, checkC) {
+  return checkR >= 0 && checkR < DIVISIONS && checkC >= 0 && checkC < DIVISIONS
+}
+
+function isDiagonallyTrapped(node, neighbor) {
+  const dR = neighbor.r - node.r
+  const dC = neighbor.c - node.c
+
+  if (dR !== 0 && dC !== 0) {
+    const node1 = World.getInstance().grid.getNodeFromRC(node.r + dR, node.c)
+    const node2 = World.getInstance().grid.getNodeFromRC(node.r, node.c + dC)
+
+    if (!node1.walkable && !node2.walkable) return true
+  }
+
+  return false
+}
+
+function getTreasureRep(r, c) {
+  return TREASURE_TAG + getRCRep(r, c)
+}
+
+function getMonsterRep(r, c) {
+  return MONSTER_TAG + getRCRep(r, c)
+}
+
+function removeObjFromSceneByName(name) {
+  const obj = scene.getObjectByName(name)
+  if (obj) scene.remove(obj)
+}

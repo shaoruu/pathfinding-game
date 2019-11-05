@@ -21,7 +21,7 @@ const camera = new THREE.PerspectiveCamera(
   1,
   CAMERA_FAR
 )
-camera.position.set(700, 800, 0)
+camera.position.set(550, 850, 0)
 
 /* -------------------------------------------------------------------------- */
 /*                               ORBIT CONTROLS                               */
@@ -39,42 +39,36 @@ controls.maxAzimuthAngle = 0
 controls.maxPolarAngle = Math.PI / 2
 
 /* -------------------------------------------------------------------------- */
-/*                                DRAG CONTROLS                               */
-/* -------------------------------------------------------------------------- */
-const draggables = []
-const dragControls = new THREE.DragControls(draggables, camera, renderer.domElement)
-
-/* -------------------------------------------------------------------------- */
 /*                                   LIGHTS                                   */
 /* -------------------------------------------------------------------------- */
 const light1 = new THREE.DirectionalLight(0xffffff)
-light1.position.set(1, 1, 1)
+light1.position.set(0, 620, -863)
 scene.add(light1)
-const light2 = new THREE.DirectionalLight(0x002288)
-light2.position.set(-1, -1, -1)
-scene.add(light2)
+// const light2 = new THREE.DirectionalLight(0x002288)
+// light2.position.set(-1, -1, -1)
+// scene.add(light2)
 const light3 = new THREE.AmbientLight(0x222222)
 scene.add(light3)
 
 /* -------------------------------------------------------------------------- */
 /*                                STATS DAT GUI                               */
 /* -------------------------------------------------------------------------- */
-const stats = new Stats()
-document.body.appendChild(stats.dom)
+// const stats = new Stats()
+// document.body.appendChild(stats.dom)
 
-const params = {
-  crazyThreshold: 0.8,
-  decisionInterval: 200,
-  treePaintIntensity: 0.25
-}
+// const params = {
+//   crazyThreshold: 0.8,
+//   decisionInterval: 200,
+//   treePaintIntensity: 0.25
+// }
 
-const gui = new dat.GUI({
-  height: 5 * 32 - 1
-})
+// const gui = new dat.GUI({
+//   height: 5 * 32 - 1
+// })
 
-gui.add(params, 'crazyThreshold', 0, 1)
-gui.add(params, 'decisionInterval', 100, 500)
-gui.add(params, 'treePaintIntensity', 0, 1)
+// gui.add(params, 'crazyThreshold', 0, 1)
+// gui.add(params, 'decisionInterval', 100, 500)
+// gui.add(params, 'treePaintIntensity', 0, 1)
 
 /* -------------------------------------------------------------------------- */
 /*                          VERTEX SHADER REFERENCES                          */

@@ -21,13 +21,34 @@
     <script src="lib/noise.js"></script>
     <script src="lib/tween.umd.js"></script>
     <script src="lib/OrbitControls.js"></script>
-    <script src="lib/DragControls.js"></script>
 
     <link rel="stylesheet" href="css/styles.css" />
     <link rel="icon" href="https://images.coollogo.com/images/prism-large-green.png" />
   </head>
   <body>
     <canvas id="main-cvs"></canvas>
+
+    <div id="score">
+      <p id="level-display">
+        Level 1
+      </p>
+      <p id="score-display">
+        Score: 0
+      </p>
+    </div>
+
+    <!-- <div id="tutorial1">Don't get eaten by the Blue boys. <br />Escape or die.</div>
+
+    <div id="tutorial2">
+      Obtain the lights for brighter future?
+    </div> -->
+
+    <div id="modal">
+      <div id="gameover">
+        <p>Gameover</p>
+        <button id="restart">Restart?</button>
+      </div>
+    </div>
 
     <div id="description">
       <span>up/down/left/right</span> to move around; <span>space</span> to break obstacle;
@@ -42,7 +63,8 @@
     <script src="js/game/models.js"></script>
     <script src="js/game/node.js"></script>
     <script src="js/game/grid.js"></script>
-    <script src="js/game/monster.js"></script>
+    <script src="js/game/treasure.js"></script>
+    <script src="js/game/monsters.js"></script>
     <script src="js/game/player.js"></script>
     <script src="js/game/world.js"></script>
     <script src="js/main.js"></script>

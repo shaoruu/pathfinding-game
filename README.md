@@ -1,1 +1,3 @@
-# pathfinding-visual
+# pathfinding-game
+
+chill

@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta http-equiv="X-UA-Compatible" content="ie=edge" />
 
-    <title>Gridworld</title>
+    <title>Pathfinding Game</title>
 
     <script
       src="https://cdnjs.cloudflare.com/ajax/libs/three.js/108/three.min.js"
@@ -24,17 +24,15 @@
     <script src="lib/DragControls.js"></script>
 
     <link rel="stylesheet" href="css/styles.css" />
-    <link rel="icon" href="https://image.flaticon.com/icons/png/512/223/223203.png" />
+    <link rel="icon" href="https://images.coollogo.com/images/prism-large-green.png" />
   </head>
   <body>
     <canvas id="main-cvs"></canvas>
 
     <div id="description">
-      <span>left click</span> to remove trees; <span>right click</span> to plant trees;
-      <span>shift + left click</span>
-      to kill monster; <span>shift + right click</span> to spawn monster; <span>Q</span> to add
-      random trees; <span>A</span>
-      to remove random trees
+      <span>up/down/left/right</span> to move around; <span>space</span> to break obstacle;
+      <span>shift</span>
+      to place obstacle;
     </div>
 
     <script src="js/utils/helpers.js"></script>

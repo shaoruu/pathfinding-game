@@ -27,6 +27,7 @@ body {
   text-align: center;
   transform: translateX(-50%);
   margin-bottom: 10px;
+  color: #a0a0a0;
 }
 
 #description span {

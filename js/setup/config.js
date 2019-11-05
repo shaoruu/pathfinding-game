@@ -58,6 +58,11 @@ const OBSTACLE_COLOR = '#B49256'
 /* -------------------------------------------------------------------------- */
 /*                                   OTHERS                                   */
 /* -------------------------------------------------------------------------- */
+const ASTAR = 'ASTAR'
+const UCS = 'UCS'
+const GREEDY = 'GREEDY'
+// const ALGORITHM = UCS
+
 const UP = 0
 const DOWN = 1
 const LEFT = 2

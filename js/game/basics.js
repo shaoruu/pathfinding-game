@@ -56,19 +56,19 @@ scene.add(light3)
 // const stats = new Stats()
 // document.body.appendChild(stats.dom)
 
-// const params = {
-//   crazyThreshold: 0.8,
-//   decisionInterval: 200,
-//   treePaintIntensity: 0.25
-// }
+const params = {
+  algorithm: ASTAR
+}
 
-// const gui = new dat.GUI({
-//   height: 5 * 32 - 1
-// })
+const gui = new dat.GUI({
+  height: 5 * 32 - 1
+})
 
-// gui.add(params, 'crazyThreshold', 0, 1)
-// gui.add(params, 'decisionInterval', 100, 500)
-// gui.add(params, 'treePaintIntensity', 0, 1)
+gui.add(params, 'algorithm', {
+  Greedy: GREEDY,
+  UCS: UCS,
+  'A*': ASTAR
+})
 
 /* -------------------------------------------------------------------------- */
 /*                          VERTEX SHADER REFERENCES                          */

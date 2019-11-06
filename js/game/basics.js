@@ -56,19 +56,20 @@ scene.add(light3)
 // const stats = new Stats()
 // document.body.appendChild(stats.dom)
 
-const params = {
-  algorithm: ASTAR
-}
+// const params = {
+//   algorithm: ASTAR
+// }
 
-const gui = new dat.GUI({
-  height: 5 * 32 - 1
-})
+// const gui = new dat.GUI({
+//   height: 5 * 32 - 1
+//   // height: '10vh'
+// })
 
-gui.add(params, 'algorithm', {
-  Greedy: GREEDY,
-  UCS: UCS,
-  'A*': ASTAR
-})
+// gui.add(params, 'algorithm', {
+//   Greedy: GREEDY,
+//   UCS: UCS,
+//   'A*': ASTAR
+// })
 
 /* -------------------------------------------------------------------------- */
 /*                          VERTEX SHADER REFERENCES                          */

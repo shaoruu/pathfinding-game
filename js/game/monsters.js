@@ -86,9 +86,7 @@ class MonsterProto {
 
   _followPlayer = () => {
     const playerRef = Player.getInstance()
-    const distanceToPlayer = Math.sqrt(
-      (this.r - playerRef.r) ** 2 + (this.c - playerRef.c) ** 2
-    )
+    const distanceToPlayer = Math.sqrt((this.r - playerRef.r) ** 2 + (this.c - playerRef.c) ** 2)
     if (distanceToPlayer > MONSTER_EYE_DIST) return
 
     this._findPathToPlayer()
@@ -167,7 +165,7 @@ class MonsterProto {
         }
 
         let newCostToNeighbor
-        switch (params.algorithm) {
+        switch (ALGORITHM) {
           case ASTAR:
             newCostToNeighbor = node.gCost + getNodalDistance(node, neighbor)
             break
@@ -181,7 +179,7 @@ class MonsterProto {
 
         if (newCostToNeighbor < neighbor.gCost || !openSet.includes(neighbor)) {
           neighbor.gCost = newCostToNeighbor
-          switch (params.algorithm) {
+          switch (ALGORITHM) {
             case ASTAR:
               neighbor.gCost = newCostToNeighbor
               neighbor.hCost = getNodalDistance(neighbor, targetNode)

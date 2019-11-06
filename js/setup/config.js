@@ -61,7 +61,7 @@ const OBSTACLE_COLOR = '#B49256'
 const ASTAR = 'ASTAR'
 const UCS = 'UCS'
 const GREEDY = 'GREEDY'
-// const ALGORITHM = UCS
+const ALGORITHM = UCS
 
 const UP = 0
 const DOWN = 1
